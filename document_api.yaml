@@ -1,0 +1,1113 @@
+---
+openapi: 3.0.1
+info:
+  title: API para la gestión de clases de Fitpal
+  description: Esta API se encarga de gestionar la consulta, creación, actualización y eliminación de clases y horarios de Fitpal. Contiene un pequeño desarrollo para el login y autenticación de usuarios.
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/andyBlack13/document_api/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: http://127.0.0.1:8000/api/
+tags:
+- name: Clases
+  description: Estos Endpoint manejan toda la información relacionada con la gestión de clases.
+- name: Horarios profesor
+  description: Estos Endpoint manejan toda la información relacionada con la gestión de horarios de los profesores. Para crear y actualizar se necesita la consulta de las clases activas.
+- name: Agendamiento de clases
+  description: Estos Endpoint manejan todas las acciones necesarias para el agendamiento de clases a los alumnos.
+- name: Usuarios
+  description: Estos Endpoint manejan todas las acciones necesarias para la gestión de usuarios.
+paths:
+  /lessons:
+    get:
+      tags:
+      - Clases
+      summary: Obtiene todas las clases creadas
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: La consulta de las clases fue exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonsGet'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+    post:
+      tags:
+      - Clases
+      summary: Inserta la información de una nueva clase a la base de datos.
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyLessonsPost'
+        required: true
+      responses:
+        "200":
+          description: La clase se ha creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonsPost'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+  /lessons/{id_lesson}:
+    put:
+      tags:
+      - Clases
+      summary: Actualiza la informacion de una clase en la base de datos.
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id_lesson
+        in: path
+        description: Identificador de la clase
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyLessonsPut'
+      responses:
+        "200":
+          description: La información de la clase se actualizó correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonsPost'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+    delete:
+      tags:
+      - Clases
+      summary: Inactiva una clase
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id_lesson
+        in: path
+        description: Identificador de la clase
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: La clase se inactiva correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonsPost'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+  /users-get-teachers:
+    get:
+      tags:
+      - Horarios profesor
+      summary: Obtiene los usuarios con tipo de usuario "Profesor"
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: La consulta de profesores fue exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoUsersTeachersGet'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+  /lessons-schedule-teacher:
+    get:
+      tags:
+      - Horarios profesor
+      summary: Obtiene todas las clases activas, disponibles 8 días despues del dia de la consulta.
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: La consulta de las clases fue exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonsScheduleTeacher'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+    post:
+      tags:
+      - Horarios profesor
+      summary: Crea un nuevo horario, con clase y profesor
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyLessonScheduleTeacherPost'
+        required: true
+      responses:
+        "200":
+          description: El horario/clase se ha creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonsScheduleTeacherPost'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+  /lessons-schedule-teacher/{id_lesson_schedule_teacher}:
+    put:
+      tags:
+      - Horarios profesor
+      summary: Actualiza la informacion de un horario/clase en la base de datos.
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id_lesson_schedule_teacher
+        in: path
+        description: Identificador de la clase
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyLessonScheduleTeacherPost'
+      responses:
+        "200":
+          description: La información de la clase se actualizó correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonsScheduleTeacherPost'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+    delete:
+      tags:
+      - Horarios profesor
+      summary: Elimina por completo un horario/clase
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id_lesson_schedule_teacher
+        in: path
+        description: Identificador del horario/clase
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: El horario/clase se elimina completamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonScheduleDelete'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+  /lessons-schedule-student:
+    get:
+      tags:
+      - Agendamiento de clases
+      summary: Obtiene todas las clases agendadas por un alumno
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: La consulta de las clases fue exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonsScheduleStudentGet'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+    post:
+      tags:
+      - Agendamiento de clases
+      summary: Crea un nuevo registro para el agendamiento de horario/clase al alumno
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyLessonsScheduleStudentPost'
+        required: true
+      responses:
+        "200":
+          description: La clase se ha creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonsScheduleStudentPost'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+  /lessons-schedule-student/{id_lesson_schedule_student}:
+    put:
+      tags:
+      - Agendamiento de clases
+      summary: Actualiza la informacion de una clase ya agendada por un alumno.
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id_lesson_schedule_student
+        in: path
+        description: Identificador de la clase ya agendada
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyLessonsScheduleStudentPost'
+      responses:
+        "200":
+          description: La información de la programación de la clase se actualizó correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonsScheduleStudentPost'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+    delete:
+      tags:
+      - Agendamiento de clases
+      summary: Elimina completamente la programación de una clase a un alumno
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id_lesson_schedule_student
+        in: path
+        description: Identificador de la clase ya agendada
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: El agendamiento de una clase a un alumno fue eliminada satisfactoriamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLessonScheduleDelete'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+  /register:
+    post:
+      tags:
+      - Usuarios
+      summary: Crea un nuevo usuario
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyUserPost'
+        required: true
+      responses:
+        "200":
+          description: El usuario se ha creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitotUser'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+  /login:
+    post:
+      tags:
+      - Usuarios
+      summary: Inicio de sesión de un usuario
+      parameters:
+      - name: email
+        in: query
+        description: Correo electrónico no puede repetirse
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: Contraseña con mas de 6 caracteres
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyLogin'
+        required: true
+      responses:
+        "200":
+          description: El usuario se ha logueado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLogin'
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+  /logout:
+    post:
+      tags:
+      - Usuarios
+      summary: Cierre de sesión de un usuario
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: El usuario se ha cerrado sesión correctamente
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+  /users/{id_user}:
+    put:
+      tags:
+      - Usuarios
+      summary: Actualizar un usuario / "no terminado"
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id_user
+        in: path
+        description: Identificador de la clase ya agendada
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Actualización
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+    delete:
+      tags:
+      - Usuarios
+      summary: Elimina un usuario  / "no terminado"
+      parameters:
+      - name: token
+        in: header
+        description: Token de autenticación en API.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: id_user
+        in: path
+        description: Identificador de la clase ya agendada
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Eliminación
+        "400":
+          description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+        "401":
+          description: (Unauthorized) No esta autorizado para acceder a la información.
+        "404":
+          description: (NotFound) No encuentra la información
+        "500":
+          description: Error en servidor
+components:
+  schemas:
+    BodyLessonsPost:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre de la clase
+        description:
+          type: string
+          description: Descripción de la clase
+        datetime:
+          type: string
+          description: Fecha y hora de creación
+        status:
+          type: integer
+          description: Estado de la clase 1 = ACTIVO, 0 = INACTIVO
+          enum:
+          - 1
+          - 0
+    ExitoLessonsPost:
+      type: object
+      properties:
+        resp:
+          type: integer
+          description: Respuesta que nos dice si la acción se ejecutó correctamente
+          enum:
+          - 1
+        id_lesson:
+          type: integer
+          description: ID de la clase creada de manera satisfactoria
+          enum:
+          - 1
+    ExitoLessonsGet:
+      type: array
+      items:
+        $ref: '#/components/schemas/ExitoLessonsGet_inner'
+    ExitoUsersTeachersGet:
+      type: array
+      items:
+        $ref: '#/components/schemas/ExitoUsersTeachersGet_inner'
+    BodyLessonsPut:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre de la clase
+        description:
+          type: string
+          description: Descripción de la clase
+        datetime:
+          type: string
+          description: Fecha y hora de creación
+        status:
+          type: integer
+          description: Estado de la clase 1 = ACTIVO, 0 = INACTIVO
+          enum:
+          - 1
+          - 0
+    ExitoLessonsScheduleTeacher:
+      type: array
+      items:
+        $ref: '#/components/schemas/ExitoLessonsScheduleTeacher_inner'
+    BodyLessonScheduleTeacherPost:
+      type: object
+      properties:
+        id_lesson:
+          type: integer
+          description: ID de la clase
+          enum:
+          - 13
+        id_teacher:
+          type: integer
+          description: ID del profesor a impartir la clase
+          enum:
+          - 2
+        lesson_type:
+          type: string
+          description: Modalidad de la clase
+          enum:
+          - Presencial
+          - Online
+        classroom:
+          type: string
+          description: Aula asignada
+          enum:
+          - Aula 4
+        date_lesson:
+          type: string
+          description: Fecha y hora asignada para la clase
+          enum:
+          - 2022-08-01 08:00:00
+        datetime:
+          type: string
+          description: Fecha y hora del registro
+          enum:
+          - 2022-07-22 14:00:00
+    ExitoLessonsScheduleTeacherPost:
+      type: object
+      properties:
+        resp:
+          type: integer
+          description: Respuesta que nos dice si la acción se ejecutó correctamente
+          enum:
+          - 1
+        id_lesson_schedule_teacher:
+          type: integer
+          description: ID de la clase creada de manera satisfactoria
+          enum:
+          - 23
+    ExitoLessonScheduleDelete:
+      type: object
+      properties:
+        resp:
+          type: integer
+          description: Respuesta que nos dice si la acción se ejecutó correctamente
+          enum:
+          - 1
+    ExitoLessonsScheduleStudentGet:
+      type: array
+      items:
+        $ref: '#/components/schemas/ExitoLessonsScheduleStudentGet_inner'
+    BodyLessonsScheduleStudentPost:
+      type: object
+      properties:
+        id_lesson_schedule_teacher:
+          type: integer
+          description: ID del horario/clase a asignar
+          enum:
+          - 13
+        id_student:
+          type: integer
+          description: ID del alumno a tomar la clase
+          enum:
+          - 2
+        datetime:
+          type: string
+          description: Fecha y hora de creación de registro
+    ExitoLessonsScheduleStudentPost:
+      type: object
+      properties:
+        resp:
+          type: integer
+          description: Respuesta que nos dice si la acción se ejecutó correctamente
+          enum:
+          - 1
+        id_lesson_schedule_student:
+          type: integer
+          description: ID del agendamiento creado satisfactoriamente
+          enum:
+          - 45
+    BodyUserPost:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre del usuario
+          enum:
+          - Pedro Hernandez
+        phone:
+          type: string
+          description: Numero de telefono del usuario registrado
+          enum:
+          - +57 1234567890
+        address:
+          type: string
+          description: Dirección del usuario registrado
+          enum:
+          - 'Calle #100'
+        emergency_phone:
+          type: string
+          description: Telefono de emergencia
+          enum:
+          - +57 1234567890
+        emergency_person:
+          type: string
+          description: Nombre de persona en caso de emergencia
+          enum:
+          - Juan Pablo Ramos
+        user_type:
+          type: string
+          description: Tipo de usuario, "Profesor", "Estudiante", "Administrador"
+          enum:
+          - Profesor
+          - Estudiante
+          - Administrador
+        img_avatar:
+          type: string
+          description: Imagen de perfil del usuario registrado
+          enum:
+          - Pedro_Hernandez_avatar.jpg
+        status:
+          type: integer
+          description: Estado de la clase 1 = ACTIVO, 0 = INACTIVO
+          enum:
+          - 1
+          - 0
+        email:
+          type: string
+          description: Correo electrónico del usuario registrado
+          enum:
+          - laura_hernandez2022@gmail.com
+        password:
+          type: string
+          description: Contraseña (HASH)
+          enum:
+          - PedroHernandez.12345*
+    ExitotUser:
+      type: object
+      properties:
+        resp:
+          type: integer
+          description: Respuesta que nos dice si la acción se ejecutó correctamente
+          enum:
+          - 1
+        id_user:
+          type: integer
+          description: ID del usuario creado correctamente
+          enum:
+          - 8
+    BodyLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Correo electrónico del usuario registrado
+          enum:
+          - laura_hernandez2022@gmail.com
+        password:
+          type: string
+          description: Contraseña (HASH)
+          enum:
+          - PedroHernandez.12345*
+    ExitoLogin:
+      type: object
+      properties:
+        resp:
+          type: integer
+          description: Respuesta que nos dice si la acción se ejecutó correctamente
+          enum:
+          - 1
+        token:
+          type: string
+          enum:
+          - 5|G4Dh5COytsT8u0mgl6NfbvIxCui5tZjBCVbfD5K8
+    ExitoLessonsGet_inner:
+      type: object
+      properties:
+        resp:
+          type: integer
+          description: Respuesta que nos dice si la acción se ejecutó correctamente
+          enum:
+          - 1
+        id_lesson:
+          type: integer
+          description: ID de la clase creada de manera satisfactoria
+          enum:
+          - 1
+        name:
+          type: string
+          description: Nombre de la clase
+          enum:
+          - Body Combat
+        description:
+          type: string
+          description: Descripción de la clase
+          enum:
+          - Esta clase combina ejercicios típicos de los deportes de contacto y las artes marciales.
+        datetime:
+          type: string
+          description: Fecha y hora de creación
+          enum:
+          - 2022-01-01 14:00:00
+        status:
+          type: integer
+          description: Estado de la clase 1 = ACTIVO, 0 = INACTIVO
+          enum:
+          - 1
+          - 0
+    ExitoUsersTeachersGet_inner:
+      type: object
+      properties:
+        resp:
+          type: integer
+          description: Respuesta que nos dice si la acción se ejecutó correctamente
+          enum:
+          - 1
+        id_teacher:
+          type: integer
+          description: ID del usuario
+          enum:
+          - 1
+        name:
+          type: string
+          description: Nombre del profesor
+          enum:
+          - Laura Hernandez
+        phone:
+          type: string
+          description: Numero de telefono del usuario registrado
+          enum:
+          - +57 1234567890
+        address:
+          type: string
+          description: Dirección del usuario registrado
+          enum:
+          - 'Calle #100'
+        emergency_phone:
+          type: string
+          description: Telefono de emergencia
+          enum:
+          - +57 1234567890
+        emergency_person:
+          type: string
+          description: Nombre de persona en caso de emergencia
+          enum:
+          - Juan Pablo Ramos
+        user_type:
+          type: string
+          description: Tipo de usuario, "Profesor", "Estudiante", "Administrador"
+          enum:
+          - Profesor
+          - Estudiante
+          - Administrador
+        img_avatar:
+          type: string
+          description: Imagen de perfil del usuario registrado
+          enum:
+          - Laura_Hernandez_avatar.jpg
+        status:
+          type: integer
+          description: Estado de la clase 1 = ACTIVO, 0 = INACTIVO
+          enum:
+          - 1
+          - 0
+        email:
+          type: string
+          description: Correo electrónico del usuario registrado
+          enum:
+          - laura_hernandez2022@gmail.com
+    ExitoLessonsScheduleTeacher_inner:
+      type: object
+      properties:
+        resp:
+          type: integer
+          description: Respuesta que nos dice si la acción se ejecutó correctamente
+          enum:
+          - 1
+        id_lesson_schedule_teacher:
+          type: integer
+          description: ID de la clase con profesor y horario asignado
+          enum:
+          - 1
+        id_lesson:
+          type: integer
+          description: ID de la clase asignada
+          enum:
+          - 13
+        id_teacher:
+          type: integer
+          description: ID del profesor asignado
+          enum:
+          - 2
+        lesson_type:
+          type: string
+          description: Modalidad de la clase
+          enum:
+          - Presencial
+        classroom:
+          type: string
+          description: Aula asignada
+          enum:
+          - Aula 2
+          - null
+        date_lesson:
+          type: string
+          description: Fecha y hora asignada a la clase
+          enum:
+          - 2022-08-02 08:00:00
+        name:
+          type: string
+          description: Nombre de la clase
+          enum:
+          - Body combat
+        description:
+          type: string
+          description: Descripción de la clase
+          enum:
+          - Esta clase combina ejercicios típicos de los deportes de contacto y las artes marciales.
+        datetime:
+          type: string
+          description: Fecha y hora de creación del registro
+          enum:
+          - 2022-07-22 14:00:00
+        status:
+          type: integer
+          description: Estado de la clase 1 = ACTIVO, 0 = INACTIVO
+          enum:
+          - 1
+          - 0
+    ExitoLessonsScheduleStudentGet_inner:
+      type: object
+      properties:
+        resp:
+          type: integer
+          description: Respuesta que nos dice si la acción se ejecutó correctamente
+          enum:
+          - 1
+        id_lesson_schedule_teacher:
+          type: integer
+          description: ID del horario/clase asignado
+          enum:
+          - 1
+        id_student:
+          type: integer
+          description: ID del alumno asignado al horario/clase
+          enum:
+          - 1
+        id_lesson:
+          type: integer
+          description: ID de la clase asignada
+          enum:
+          - 13
+        id_teacher:
+          type: integer
+          description: ID del profesor asignado
+          enum:
+          - 2
+        lesson_type:
+          type: string
+          description: Modalidad de la clase
+          enum:
+          - Presencial
+        classroom:
+          type: string
+          description: Aula asignada
+          enum:
+          - Aula 2
+          - null
+        date_lesson:
+          type: string
+          description: Fecha y hora asignada a la clase
+          enum:
+          - 2022-08-02 08:00:00
+        name:
+          type: string
+          description: Nombre de la clase
+          enum:
+          - Body combat
+        description:
+          type: string
+          description: Descripción de la clase
+          enum:
+          - Esta clase combina ejercicios típicos de los deportes de contacto y las artes marciales.
+  responses:
+    Unauthorized:
+      description: (Unauthorized) No esta autorizado para acceder a la información.
+    NotFound:
+      description: (NotFound) No encuentra la información
+    BadRequest:
+      description: (Bad Request) Los datos enviados son incorrectos o hay datos obligatorios no enviados
+    ServerError:
+      description: Error en servidor
+  parameters:
+    token:
+      name: token
+      in: header
+      description: Token de autenticación en API.
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
